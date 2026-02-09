@@ -82,14 +82,34 @@ describe('solvePuzzle', () => {
 			for (const [i, j] of path) {
 				constructedWord += puzzle[i][j];
 			}
-			expect(constructedWord).toBe(word);
+			const wordWithoutSpaces = word.replace(/\s+/g, '');
+			expect(constructedWord).toBe(wordWithoutSpaces);
+		}
+	});
+
+	it('should not reuse cells in a single word path', async () => {
+		const puzzle = [
+			['C', 'A', 'T', 'S'],
+			['O', 'D', 'O', 'O'],
+			['G', 'S', 'A', 'W'],
+			['S', 'A', 'T', 'E']
+		];
+		const results = await solvePuzzle(puzzle);
+		for (const word in results) {
+			const path = results[word];
+			const usedCells = new Set<string>();
+			for (const [i, j] of path) {
+				const cellKey = `${i},${j}`;
+				expect(usedCells.has(cellKey)).toBe(false);
+				usedCells.add(cellKey);
+			}
 		}
 	});
 });
 
 describe('adjacent', () => {
 	it('should return all adjacent cells', () => {
-		const result = adjacent(1, 1);
+		const result = adjacent([1, 1]);
 		const expected = [
 			[0, 0],
 			[0, 1],
@@ -104,7 +124,7 @@ describe('adjacent', () => {
 	});
 
 	it('should handle edge cells correctly', () => {
-		const result = adjacent(0, 0);
+		const result = adjacent([0, 0]);
 		const expected = [
 			[0, 1],
 			[1, 0],
