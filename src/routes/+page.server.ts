@@ -5,8 +5,8 @@ function isValidPuzzle(query: string): boolean {
 	// Must be exactly 16 characters
 	if (query.length !== 16) return false;
 
-	// Must be all letters
-	if (!/^[a-zA-Z]{16}$/.test(query)) return false;
+	// Must be all letters or spaces
+	if (!/^[a-zA-Z ]{16}$/.test(query)) return false;
 
 	// Reject puzzles with too many repeated letters (suspicious)
 	const charCounts = new Map<string, number>();
@@ -15,8 +15,8 @@ function isValidPuzzle(query: string): boolean {
 	}
 
 	// No letter should appear more than 8 times
-	for (const count of charCounts.values()) {
-		if (count > 8) return false;
+	for (const [char, count] of charCounts.entries()) {
+		if (char !== ' ' && count > 8) return false;
 	}
 
 	return true;
