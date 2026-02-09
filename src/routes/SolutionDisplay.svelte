@@ -15,9 +15,16 @@
 	});
 
 	let lengthFilter = $state<number>(0);
+	let selectionInOptions = $derived(lengthOptions.includes(lengthFilter));
 
 	let lengthFilteredWords = $derived(
-		orderedWords.filter((word) => lengthFilter == 0 || word.length == lengthFilter)
+		orderedWords.filter(
+			(word) =>
+				lengthFilter == 0 ||
+				// Handle case where we select an option, then recalculate and the option disappears
+				!selectionInOptions ||
+				word.length == lengthFilter
+		)
 	);
 
 	let beforeFilter = $state<string>('');
@@ -78,10 +85,14 @@
 		>
 	</div>
 </div>
+<h3 class="mt-2 mb-4 font-semibold">
+	{filteredWords.length} words
+	{#if lengthFilteredWords.length !== filteredWords.length}({lengthFilteredWords.length} before alphabetical
+		filter){/if}
+</h3>
 <div class="max-h-96 overflow-y-auto rounded-lg bg-gray-100 p-4">
-	<h3 class="mt-2 mb-4 font-semibold">{filteredWords.length} words</h3>
 	<ul class="space-y-1">
-		{#each filteredWords as word}
+		{#each filteredWords as word (word)}
 			<li>
 				<button
 					onclick={() => {
