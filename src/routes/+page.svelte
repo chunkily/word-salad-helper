@@ -154,7 +154,7 @@
 		height: 4rem;
 		font-size: 1.5rem;
 		text-align: center;
-		margin: 0.2rem;
+		margin: 0.5rem;
 	}
 	div {
 		margin: 1rem;
