@@ -1,4 +1,3 @@
--- Wordlist generated from 3of6game wordlist published by Alan Beale http://wordlist.aspell.net/12dicts/
 aah
 aardvark
 aardvarks

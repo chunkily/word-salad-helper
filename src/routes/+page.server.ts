@@ -1,9 +1,35 @@
-import load_wordlist from '$lib/load_wordlist';
+import solvePuzzle from '$lib/solvePuzzle';
+import type { PageServerLoad } from './$types';
 
-export function load() {
-	const wordlist = load_wordlist();
+export const load: PageServerLoad = async ({ url }) => {
+	const query = url.searchParams.get('p') || '';
+
+	const puzzle: string[][] = [
+		[' ', ' ', ' ', ' '],
+		[' ', ' ', ' ', ' '],
+		[' ', ' ', ' ', ' '],
+		[' ', ' ', ' ', ' ']
+	];
+
+	let solutions: { path: number[][]; word: string }[] = [];
+
+	if (query.length !== 16) {
+		return {
+			puzzle,
+			solutions
+		};
+	}
+
+	for (let i = 0; i < 4; i++) {
+		for (let j = 0; j < 4; j++) {
+			puzzle[i][j] = query[i * 4 + j];
+		}
+	}
+
+	solutions = await solvePuzzle(puzzle);
 
 	return {
-		wordlist
+		puzzle,
+		solutions
 	};
-}
+};
