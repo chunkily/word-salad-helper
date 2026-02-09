@@ -6,16 +6,17 @@ const MAX_INDEX = PUZZLE_SIZE - 1;
 export default async function solvePuzzle(puzzle: string[][]) {
 	const trie = await loadTrie();
 
-	const results = [];
-	const queue = [];
-	for (let i = 0; i < MAX_INDEX; i++) {
-		for (let j = 0; j < MAX_INDEX; j++) {
+	const results: Record<string, number[][]> = {};
+	const queue: number[][][] = [];
+	for (let i = 0; i < PUZZLE_SIZE; i++) {
+		for (let j = 0; j < PUZZLE_SIZE; j++) {
 			queue.push([[i, j]]);
 		}
 	}
 
 	while (queue.length > 0) {
 		const path = queue.pop();
+
 		if (path == undefined) {
 			throw 'Unexpected undefined queue element';
 		}
@@ -26,7 +27,7 @@ export default async function solvePuzzle(puzzle: string[][]) {
 				const j = el[1];
 				return puzzle[i][j];
 			})
-			.join();
+			.join('');
 
 		if (isPrefix(trie, chars)) {
 			const head = path[path.length - 1];
@@ -40,18 +41,14 @@ export default async function solvePuzzle(puzzle: string[][]) {
 		}
 
 		if (search(trie, chars)) {
-			results.push({
-				path,
-				word: chars
-			});
+			results[chars] = path;
 		}
 	}
 
-	results.sort();
 	return results;
 }
 
-function inPath(node: number[], path: number[][]) {
+export function inPath(node: number[], path: number[][]) {
 	for (const el of path) {
 		if (el[0] === node[0] && el[1] === node[1]) {
 			return true;
@@ -60,7 +57,7 @@ function inPath(node: number[], path: number[][]) {
 	return false;
 }
 
-function adjacent(i: number, j: number) {
+export function adjacent(i: number, j: number) {
 	const adj = [];
 
 	if (i > 0 && j > 0) {

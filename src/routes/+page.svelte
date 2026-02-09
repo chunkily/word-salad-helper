@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import { navigating } from '$app/state';
+	import SolutionDisplay from './SolutionDisplay.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -13,7 +14,15 @@
 	let puzzleState = $state<string[][]>(data.puzzle);
 
 	let hiddenValue = $derived(
-		puzzleState.map((row) => row.map((cell) => cell || ' ').join('')).join('')
+		puzzleState
+			.map((row) => row.map((cell) => cell || ' ').join(''))
+			.join('')
+			.toLowerCase()
+	);
+
+	let highlightedWord = $state<string>('');
+	let highlightedPath = $derived(
+		highlightedWord && data.solutions[highlightedWord] ? data.solutions[highlightedWord] : []
 	);
 
 	function handleKeyDown(event: KeyboardEvent, row: number, col: number) {
@@ -89,9 +98,8 @@
 				puzzleState[i][j] = ' ';
 			}
 		}
+		inputRefs[0].focus();
 	}
-
-	$inspect(data.solutions);
 </script>
 
 <div>
@@ -112,7 +120,6 @@
 	{/each}
 	<form method="GET" action="./" bind:this={formElement}>
 		<input type="hidden" name="p" value={hiddenValue} />
-		<p>{hiddenValue}</p>
 
 		{#if navigating.to}
 			<p>Solving puzzle...</p>
@@ -122,8 +129,22 @@
 		{/if}
 	</form>
 
+	{#if Object.keys(data.solutions).length > 0}
+		<div>
+			<h2>Solutions</h2>
+			<SolutionDisplay solutions={data.solutions} bind:highlighted={highlightedWord} />
+		</div>
+	{/if}
+
 	<div>
-		{JSON.stringify(puzzleState)}
+		Puzzle: {JSON.stringify(puzzleState)}
+	</div>
+	<div>
+		Solutions: {JSON.stringify(data.solutions)}
+	</div>
+	<div>
+		Highlighted Word: {highlightedWord}
+		Highlighted Path: {JSON.stringify(highlightedPath)}
 	</div>
 </div>
 

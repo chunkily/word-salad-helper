@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		[' ', ' ', ' ', ' ']
 	];
 
-	let solutions: { path: number[][]; word: string }[] = [];
+	let solutions: Record<string, number[][]> = {};
 
 	if (query.length !== 16) {
 		return {
@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	for (let i = 0; i < 4; i++) {
 		for (let j = 0; j < 4; j++) {
-			puzzle[i][j] = query[i * 4 + j];
+			puzzle[i][j] = query[i * 4 + j].toUpperCase();
 		}
 	}
 

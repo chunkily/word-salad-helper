@@ -1,6 +1,6 @@
 import wordlist_trie from './assets/wordlist-trie.json';
 
-interface TrieNode {
+export interface TrieNode {
 	[key: string]: TrieNode | boolean;
 }
 
@@ -11,8 +11,9 @@ export async function loadTrie(): Promise<TrieNode> {
 /** Returns true if the word is in the trie */
 export function search(trie: TrieNode, word: string): boolean {
 	let node = trie;
+	const normalized = word.toLowerCase();
 
-	for (const char of word) {
+	for (const char of normalized) {
 		if (!node[char]) return false;
 		node = node[char] as TrieNode;
 	}
@@ -23,13 +24,12 @@ export function search(trie: TrieNode, word: string): boolean {
 /** Returns true if the prefix is a valid prefix in the trie */
 export function isPrefix(trie: TrieNode, prefix: string): boolean {
 	let node = trie;
+	const normalized = prefix.toLowerCase();
 
-	for (const char of prefix) {
+	for (const char of normalized) {
 		if (!node[char]) return false;
 		node = node[char] as TrieNode;
 	}
 
-	const keys = Object.keys(node);
-	keys.splice(keys.indexOf('$'), 1);
-	return keys.length > 0;
+	return true;
 }
