@@ -8,10 +8,21 @@
 	let inputRefs: HTMLInputElement[] = [];
 	let formElement: HTMLFormElement;
 
-	// Svelte warns that only the initial value of data is used,
-	// which is exactly what we want here.
-	// svelte-ignore state_referenced_locally
-	let puzzleState = $state<string[][]>(data.puzzle);
+	let puzzleState = $state<string[][]>([
+		[' ', ' ', ' ', ' '],
+		[' ', ' ', ' ', ' '],
+		[' ', ' ', ' ', ' '],
+		[' ', ' ', ' ', ' ']
+	]);
+	$effect(() => {
+		if (data.puzzle) {
+			for (let i = 0; i < 4; i++) {
+				for (let j = 0; j < 4; j++) {
+					puzzleState[i][j] = data.puzzle[i][j] || ' ';
+				}
+			}
+		}
+	});
 
 	let hiddenValue = $derived(
 		puzzleState
@@ -33,7 +44,7 @@
 		event.preventDefault();
 		const key = event.key;
 		if (key === 'Backspace') {
-			puzzleState[row][col] = '';
+			puzzleState[row][col] = ' ';
 			let prevRef = inputRefs[row * 4 + col - 1];
 			if (prevRef) {
 				prevRef.focus();
@@ -95,16 +106,6 @@
 	function submitPuzzle() {
 		formElement.requestSubmit();
 	}
-
-	function clearPuzzle() {
-		for (let i = 0; i < 4; i++) {
-			for (let j = 0; j < 4; j++) {
-				puzzleState[i][j] = ' ';
-			}
-		}
-		inputRefs[0].focus();
-		highlightedWord = '';
-	}
 </script>
 
 <div class="m-4">
@@ -147,27 +148,30 @@
 					<br />
 				{/each}
 			</div>
-			<form method="GET" action="./" bind:this={formElement}>
-				<input type="hidden" name="p" value={hiddenValue} />
+			<div class="flex">
+				<form method="GET" action="./" bind:this={formElement}>
+					<input type="hidden" name="p" value={hiddenValue} />
 
-				{#if navigating.to}
-					<p>Solving puzzle...</p>
-				{:else}
-					<div class="flex gap-3">
-						<button
-							type="submit"
-							class="cursor-pointer rounded bg-blue-500 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-600"
-							>Solve</button
-						>
-						<button
-							type="button"
-							onclick={clearPuzzle}
-							class="cursor-pointer rounded bg-gray-200 px-6 py-2 transition-colors hover:bg-gray-300"
-							>Clear</button
-						>
-					</div>
-				{/if}
-			</form>
+					{#if navigating.to}
+						<p>Solving puzzle...</p>
+					{:else}
+						<div class="flex gap-3">
+							<button
+								type="submit"
+								class="cursor-pointer rounded bg-blue-500 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-600"
+								>Solve</button
+							>
+						</div>
+					{/if}
+				</form>
+				<form method="GET" action="./" class="ml-2">
+					<button
+						type="submit"
+						class="cursor-pointer rounded bg-gray-200 px-6 py-2 transition-colors hover:bg-gray-300"
+						>Clear</button
+					>
+				</form>
+			</div>
 		</div>
 
 		{#if Object.keys(data.solutions).length > 0}
