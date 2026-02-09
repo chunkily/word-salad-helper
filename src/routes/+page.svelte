@@ -106,93 +106,74 @@
 	}
 </script>
 
-<div>
-	<h1>Word Salad Helper</h1>
-	<div class="puzzle-container">
-		<svg class="path-overlay" width="280" height="280">
-			{#each highlightedPath.slice(0, -1) as coord, idx}
-				{@const x1 = coord[1] * 70.4 + 35.2}
-				{@const y1 = coord[0] * 70.4 + 35.2}
-				{@const x2 = highlightedPath[idx + 1][1] * 70.4 + 35.2}
-				{@const y2 = highlightedPath[idx + 1][0] * 70.4 + 35.2}
-				<line
-					{x1}
-					{y1}
-					{x2}
-					{y2}
-					stroke="#3b82f6"
-					stroke-width="8"
-					stroke-linecap="round"
-				/>
-			{/each}
-		</svg>
-		{#each [0, 1, 2, 3] as i}
-			{#each [0, 1, 2, 3] as j}
-				<input
-					bind:this={inputRefs[i * 4 + j]}
-					type="text"
-					maxlength="1"
-					class="tile"
-					class:highlighted={isInHighlightedPath(i, j)}
-					id="tile-{i}-{j}"
-					value={puzzleState[i][j] || ''}
-					onkeydown={(e) => handleKeyDown(e, i, j)}
-				/>
-			{/each}
-			<br />
-		{/each}
-	</div>
-	<form method="GET" action="./" bind:this={formElement}>
-		<input type="hidden" name="p" value={hiddenValue} />
+<div class="m-4">
+	<h1 class="mb-4 text-3xl font-bold">Word Salad Helper</h1>
+	<div class="flex flex-col gap-8 md:flex-row md:items-start">
+		<div class="shrink-0">
+			<div class="relative mb-4 inline-block w-fit">
+				<svg class="pointer-events-none absolute top-0 left-0" width="280" height="280">
+					{#each highlightedPath.slice(0, -1) as coord, idx}
+						{@const x1 = coord[1] * 70.4 + 35.2}
+						{@const y1 = coord[0] * 70.4 + 35.2}
+						{@const x2 = highlightedPath[idx + 1][1] * 70.4 + 35.2}
+						{@const y2 = highlightedPath[idx + 1][0] * 70.4 + 35.2}
+						<line
+							{x1}
+							{y1}
+							{x2}
+							{y2}
+							stroke="#3b82f6"
+							stroke-width="8"
+							stroke-linecap="round"
+						/>
+					{/each}
+				</svg>
+				{#each [0, 1, 2, 3] as i}
+					{#each [0, 1, 2, 3] as j}
+						<input
+							bind:this={inputRefs[i * 4 + j]}
+							type="text"
+							maxlength="1"
+							class="relative z-10 m-[0.2rem] h-16 w-16 border border-gray-300 text-center text-2xl"
+							class:bg-blue-500={isInHighlightedPath(i, j)}
+							class:text-white={isInHighlightedPath(i, j)}
+							class:font-bold={isInHighlightedPath(i, j)}
+							id="tile-{i}-{j}"
+							value={puzzleState[i][j] || ''}
+							onkeydown={(e) => handleKeyDown(e, i, j)}
+						/>
+					{/each}
+					<br />
+				{/each}
+			</div>
+			<form method="GET" action="./" bind:this={formElement}>
+				<input type="hidden" name="p" value={hiddenValue} />
 
-		{#if navigating.to}
-			<p>Solving puzzle...</p>
-		{:else}
-			<button type="submit">Solve</button>
-			<button type="button" onclick={clearPuzzle}>Clear</button>
-		{/if}
-	</form>
-
-	{#if Object.keys(data.solutions).length > 0}
-		<div>
-			<h2>Solutions</h2>
-			<SolutionDisplay solutions={data.solutions} bind:highlighted={highlightedWord} />
+				{#if navigating.to}
+					<p>Solving puzzle...</p>
+				{:else}
+					<div class="flex gap-3">
+						<button
+							type="submit"
+							class="cursor-pointer rounded bg-blue-500 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-600"
+							>Solve</button
+						>
+						<button
+							type="button"
+							onclick={clearPuzzle}
+							class="cursor-pointer rounded bg-gray-200 px-6 py-2 transition-colors hover:bg-gray-300"
+							>Clear</button
+						>
+					</div>
+				{/if}
+			</form>
 		</div>
-	{/if}
+
+		{#if Object.keys(data.solutions).length > 0}
+			<div class="min-w-0 md:flex-1">
+				<h2 class="mb-4 text-2xl font-bold">Solutions</h2>
+				<SolutionDisplay solutions={data.solutions} bind:highlighted={highlightedWord} />
+			</div>
+		{/if}
+	</div>
 </div>
-
-<style>
-	.puzzle-container {
-		position: relative;
-		display: inline-block;
-		width: fit-content;
-	}
-
-	.path-overlay {
-		position: absolute;
-		top: 0;
-		left: 0;
-		pointer-events: none;
-	}
-
-	.tile {
-		width: 4rem;
-		height: 4rem;
-		font-size: 1.5rem;
-		text-align: center;
-		margin: 0.2rem;
-		position: relative;
-		z-index: 1;
-	}
-	.tile.highlighted {
-		background-color: #3b82f6;
-		color: white;
-		font-weight: bold;
-	}
-	div {
-		margin: 1rem;
-	}
-	h1 {
-		margin-bottom: 1rem;
-	}
-</style>
