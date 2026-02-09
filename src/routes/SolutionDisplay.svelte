@@ -66,7 +66,15 @@
 	<ul>
 		{#each filteredWords as word}
 			<li class={word === highlighted ? 'bg-yellow-200' : ''}>
-				<button onclick={() => (highlighted = word)}>{word} ({word.length})</button>
+				<button
+					onclick={() => {
+						if (highlighted === word) {
+							highlighted = '';
+						} else {
+							highlighted = word;
+						}
+					}}>{word} ({word.length})</button
+				>
 			</li>
 		{/each}
 	</ul>
