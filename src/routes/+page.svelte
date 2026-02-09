@@ -6,7 +6,7 @@
 	let { data }: PageProps = $props();
 
 	let inputRefs: HTMLInputElement[] = [];
-	let formElement: HTMLFormElement;
+	let formElement = $state<HTMLFormElement>();
 
 	let puzzleState = $state<string[][]>([
 		[' ', ' ', ' ', ' '],
@@ -48,7 +48,7 @@
 	function handleKeyDown(event: KeyboardEvent, row: number, col: number) {
 		event.preventDefault();
 		const key = event.key;
-		if (key === 'Backspace') {
+		if (key === 'Backspace' || key === 'Delete') {
 			puzzleState[row][col] = ' ';
 			let prevRef = inputRefs[row * 4 + col - 1];
 			if (prevRef) {
@@ -109,7 +109,9 @@
 	}
 
 	function submitPuzzle() {
-		formElement.requestSubmit();
+		if (formElement) {
+			formElement.requestSubmit();
+		}
 	}
 </script>
 
@@ -186,12 +188,12 @@
 				{/each}
 			</div>
 			<div class="flex">
-				<form method="GET" action="./" bind:this={formElement}>
-					<input type="hidden" name="p" value={hiddenValue} />
+				{#if navigating.to}
+					<p>Loading...</p>
+				{:else}
+					<form method="GET" action="./" bind:this={formElement}>
+						<input type="hidden" name="p" value={hiddenValue} />
 
-					{#if navigating.to}
-						<p>Solving puzzle...</p>
-					{:else}
 						<div class="flex gap-3">
 							<button
 								type="submit"
@@ -199,15 +201,15 @@
 								>Solve</button
 							>
 						</div>
-					{/if}
-				</form>
-				<form method="GET" action="./" class="ml-2">
-					<button
-						type="submit"
-						class="cursor-pointer rounded bg-gray-200 px-6 py-2 transition-colors hover:bg-gray-300"
-						>Clear</button
-					>
-				</form>
+					</form>
+					<form method="GET" action="./" class="ml-2">
+						<button
+							type="submit"
+							class="cursor-pointer rounded bg-gray-200 px-6 py-2 transition-colors hover:bg-gray-300"
+							>Clear</button
+						>
+					</form>
+				{/if}
 			</div>
 		</div>
 
