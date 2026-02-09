@@ -103,6 +103,7 @@
 			}
 		}
 		inputRefs[0].focus();
+		highlightedWord = '';
 	}
 </script>
 
