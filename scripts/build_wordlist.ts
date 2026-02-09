@@ -13,7 +13,7 @@ function buildWordlist(): string[] {
 	const words = content
 		.split('\n')
 		.map((word) => word.trim().toLowerCase())
-		.filter((word) => word.length > 2);
+		.filter((word) => word.length >= 2);
 
 	// Skip the first line that contains copyright info
 	words.shift();
