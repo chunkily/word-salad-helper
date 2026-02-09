@@ -35,9 +35,14 @@
 	let highlightedPath = $derived(
 		highlightedWord && data.solutions[highlightedWord] ? data.solutions[highlightedWord] : []
 	);
+	const maxAccentIndex = 12;
 
 	function isInHighlightedPath(row: number, col: number): boolean {
 		return highlightedPath.some((coord) => coord[0] === row && coord[1] === col);
+	}
+
+	function getHighlightIndex(row: number, col: number): number {
+		return highlightedPath.findIndex((coord) => coord[0] === row && coord[1] === col);
 	}
 
 	function handleKeyDown(event: KeyboardEvent, row: number, col: number) {
@@ -112,8 +117,35 @@
 	<h1 class="mb-4 text-3xl font-bold">Word Salad Helper</h1>
 	<div class="flex flex-col gap-8 md:flex-row md:items-start">
 		<div class="shrink-0">
-			<div class="relative mb-4 inline-block w-fit">
+			<div class="puzzle-board relative mb-4 inline-block w-fit">
 				<svg class="pointer-events-none absolute top-0 left-0" width="280" height="280">
+					<defs>
+						{#each highlightedPath.slice(0, -1) as coord, idx}
+							{@const accentIndexStart = Math.min(idx, maxAccentIndex)}
+							{@const accentIndexEnd = Math.min(idx + 1, maxAccentIndex)}
+							{@const x1 = coord[1] * 70.4 + 35.2}
+							{@const y1 = coord[0] * 70.4 + 35.2}
+							{@const x2 = highlightedPath[idx + 1][1] * 70.4 + 35.2}
+							{@const y2 = highlightedPath[idx + 1][0] * 70.4 + 35.2}
+							<linearGradient
+								id="gradient-{idx}"
+								{x1}
+								{y1}
+								{x2}
+								{y2}
+								gradientUnits="userSpaceOnUse"
+							>
+								<stop
+									offset="0%"
+									style={`stop-color: var(--accent-color-${accentIndexStart})`}
+								/>
+								<stop
+									offset="100%"
+									style={`stop-color: var(--accent-color-${accentIndexEnd})`}
+								/>
+							</linearGradient>
+						{/each}
+					</defs>
 					{#each highlightedPath.slice(0, -1) as coord, idx}
 						{@const x1 = coord[1] * 70.4 + 35.2}
 						{@const y1 = coord[0] * 70.4 + 35.2}
@@ -124,7 +156,8 @@
 							{y1}
 							{x2}
 							{y2}
-							stroke="#3b82f6"
+							class="path-line"
+							stroke="url(#gradient-{idx})"
 							stroke-width="8"
 							stroke-linecap="round"
 						/>
@@ -132,14 +165,18 @@
 				</svg>
 				{#each [0, 1, 2, 3] as i}
 					{#each [0, 1, 2, 3] as j}
+						{@const highlightIndex = getHighlightIndex(i, j)}
+						{@const accentIndex =
+							highlightIndex >= 0 ? Math.min(highlightIndex, maxAccentIndex) : 0}
 						<input
 							bind:this={inputRefs[i * 4 + j]}
 							type="text"
 							maxlength="1"
-							class="relative z-10 m-[0.2rem] h-16 w-16 border border-gray-300 text-center text-2xl"
-							class:bg-blue-500={isInHighlightedPath(i, j)}
-							class:text-white={isInHighlightedPath(i, j)}
-							class:font-bold={isInHighlightedPath(i, j)}
+							class="tile-input relative z-10 m-[0.2rem] h-16 w-16 border border-gray-300 text-center text-2xl"
+							class:highlighted={isInHighlightedPath(i, j)}
+							style={highlightIndex >= 0
+								? `--accent-color: var(--accent-color-${accentIndex})`
+								: ''}
 							id="tile-{i}-{j}"
 							value={puzzleState[i][j] || ''}
 							onkeydown={(e) => handleKeyDown(e, i, j)}
@@ -182,3 +219,47 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	.puzzle-board {
+		--accent-color-0: #01c131;
+		--accent-color-1: #00c675;
+		--accent-color-2: #00cbba;
+		--accent-color-3: #00c4dc;
+		--accent-color-4: #00befe;
+		--accent-color-5: #0093fe;
+		--accent-color-6: #0069fe;
+		--accent-color-7: #003ffe;
+		--accent-color-8: #0015fe;
+		--accent-color-9: #200afe;
+		--accent-color-10: #4000fe;
+		--accent-color-11: #6a00fe;
+		--accent-color-12: #9400fe;
+	}
+
+	.tile-input {
+		transition:
+			background-color 240ms ease,
+			color 240ms ease,
+			border-color 240ms ease;
+	}
+
+	.tile-input.highlighted {
+		background-color: var(--accent-color);
+		border-color: var(--accent-color);
+		color: #ffffff;
+		font-weight: 700;
+	}
+
+	.path-line {
+		stroke-dasharray: 240;
+		stroke-dashoffset: 240;
+		animation: draw-line 320ms ease forwards;
+	}
+
+	@keyframes draw-line {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+</style>
