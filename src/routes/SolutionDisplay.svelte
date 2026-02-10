@@ -62,7 +62,7 @@
 			<input
 				type="text"
 				id="beforeFilter"
-				bind:value={beforeFilter}
+				bind:value={() => beforeFilter, (v) => (beforeFilter = v.toUpperCase())}
 				class="w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 			/>
 		</div>
@@ -71,7 +71,7 @@
 			<input
 				type="text"
 				id="afterFilter"
-				bind:value={afterFilter}
+				bind:value={() => afterFilter, (v) => (afterFilter = v.toUpperCase())}
 				class="w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 			/>
 		</div>
