@@ -5,5 +5,9 @@
 	let { children } = $props();
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head
+	><link rel="icon" href={favicon} />
+	<title>Word Salad Helper</title>
+	<meta name="description" content="A helper tool for the Word Salad game by Bleppo Games." />
+</svelte:head>
 {@render children()}

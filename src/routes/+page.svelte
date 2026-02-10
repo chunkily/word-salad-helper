@@ -220,6 +220,18 @@
 			</div>
 		{/if}
 	</div>
+
+	<footer class="mt-12 border-t border-gray-200 pt-6 text-center text-sm text-gray-600">
+		<p>&copy; 2026 Lee Chengkai. All rights reserved.</p>
+		<p class="mt-2">
+			Made with <a
+				href="https://svelte.dev"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="text-blue-600 underline hover:text-blue-700">Svelte</a
+			>
+		</p>
+	</footer>
 </div>
 
 <style>
