@@ -31,8 +31,6 @@
 			.toLowerCase()
 	);
 
-	let debugmsg = $state<string>(''); // For debugging purposes, can be removed later
-
 	let highlightedWord = $state<string>('');
 	let highlightedPath = $derived(
 		highlightedWord && data.solutions[highlightedWord] ? data.solutions[highlightedWord] : []
@@ -144,8 +142,6 @@
 
 <div class="m-4">
 	<h1 class="mb-4 text-3xl font-bold">Word Salad Helper</h1>
-	<p>DEBUG: {debugmsg}</p>
-	<p>hiddenvalue: {hiddenValue}</p>
 	<div class="flex flex-col gap-8 md:flex-row md:items-start">
 		<div class="shrink-0">
 			<div class="puzzle-board relative mb-4 inline-block w-fit">
