@@ -31,6 +31,8 @@
 			.toLowerCase()
 	);
 
+	let debugmsg = $state<string>(''); // For debugging purposes, can be removed later
+
 	let highlightedWord = $state<string>('');
 	let highlightedPath = $derived(
 		highlightedWord && data.solutions[highlightedWord] ? data.solutions[highlightedWord] : []
@@ -46,12 +48,17 @@
 	}
 
 	function handleKeyDown(event: KeyboardEvent, row: number, col: number) {
+		event.preventDefault();
 		const key = event.key;
 		if (key === 'Backspace' || key === 'Delete') {
-			puzzleState[row][col] = ' ';
-			let prevRef = inputRefs[row * 4 + col - 1];
-			if (prevRef) {
-				prevRef.focus();
+			let current = puzzleState[row][col];
+			if (current.trim() === '') {
+				let prevRef = inputRefs[row * 4 + col - 1];
+				if (prevRef) {
+					prevRef.focus();
+				}
+			} else {
+				puzzleState[row][col] = '';
 			}
 			return;
 		}
@@ -104,6 +111,27 @@
 			if (nextRef) {
 				nextRef.focus();
 			}
+			return;
+		}
+	}
+
+	// Mobile devices do not trigger the onkeydown event for the virtual keyboard,
+	// so we are forced to handle input events instead
+	function handleInput(event: Event, row: number, col: number) {
+		let input = event.target as HTMLInputElement;
+		let value = input.value.toUpperCase().trim();
+		let current = puzzleState[row][col];
+
+		if (value === '') {
+			puzzleState[row][col] = ' ';
+		} else if (/^[A-Z]$/.test(value)) {
+			puzzleState[row][col] = value;
+			let nextRef = inputRefs[row * 4 + col + 1];
+			if (nextRef) {
+				nextRef.focus();
+			}
+		} else {
+			input.value = current === ' ' ? '' : current; // Revert to previous valid value
 		}
 	}
 
@@ -116,6 +144,8 @@
 
 <div class="m-4">
 	<h1 class="mb-4 text-3xl font-bold">Word Salad Helper</h1>
+	<p>DEBUG: {debugmsg}</p>
+	<p>hiddenvalue: {hiddenValue}</p>
 	<div class="flex flex-col gap-8 md:flex-row md:items-start">
 		<div class="shrink-0">
 			<div class="puzzle-board relative mb-4 inline-block w-fit">
@@ -173,14 +203,14 @@
 							<input
 								bind:this={inputRefs[i * 4 + j]}
 								type="text"
-								maxlength="1"
 								class="tile-input relative z-10 m-[0.2rem] h-16 w-16 border border-gray-300 text-center text-2xl"
 								class:highlighted={isInHighlightedPath(i, j)}
 								style={highlightIndex >= 0
 									? `--accent-color: var(--accent-color-${accentIndex})`
 									: ''}
 								id="tile-{i}-{j}"
-								value={puzzleState[i][j] || ''}
+								value={puzzleState[i][j] === ' ' ? '' : puzzleState[i][j]}
+								oninput={(e) => handleInput(e, i, j)}
 								onkeydown={(e) => handleKeyDown(e, i, j)}
 							/>
 						{/each}
