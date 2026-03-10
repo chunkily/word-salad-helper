@@ -122,7 +122,7 @@
 			<div class="puzzle-board relative mb-4 inline-block w-fit">
 				<svg class="pointer-events-none absolute top-0 left-0" width="280" height="280">
 					<defs>
-						{#each highlightedPath.slice(0, -1) as coord, idx}
+						{#each highlightedPath.slice(0, -1) as coord, idx (idx)}
 							{@const accentIndexStart = Math.min(idx, maxAccentIndex)}
 							{@const accentIndexEnd = Math.min(idx + 1, maxAccentIndex)}
 							{@const x1 = coord[1] * 70.4 + 35.2}
@@ -148,7 +148,7 @@
 							</linearGradient>
 						{/each}
 					</defs>
-					{#each highlightedPath.slice(0, -1) as coord, idx}
+					{#each highlightedPath.slice(0, -1) as coord, idx (idx)}
 						{@const x1 = coord[1] * 70.4 + 35.2}
 						{@const y1 = coord[0] * 70.4 + 35.2}
 						{@const x2 = highlightedPath[idx + 1][1] * 70.4 + 35.2}
@@ -165,8 +165,8 @@
 						/>
 					{/each}
 				</svg>
-				{#each [0, 1, 2, 3] as i}
-					{#each [0, 1, 2, 3] as j}
+				{#each [0, 1, 2, 3] as i (i)}
+					{#each [0, 1, 2, 3] as j (j)}
 						{@const highlightIndex = getHighlightIndex(i, j)}
 						{@const accentIndex =
 							highlightIndex >= 0 ? Math.min(highlightIndex, maxAccentIndex) : 0}
