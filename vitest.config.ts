@@ -5,7 +5,8 @@ export default defineConfig({
 	plugins: [svelte({ hot: !process.env.VITEST })],
 	test: {
 		globals: true,
-		environment: 'node'
+		environment: 'node',
+		exclude: ['node_modules', 'dist', 'e2e']
 	},
 	resolve: {
 		alias: {
