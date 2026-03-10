@@ -46,7 +46,6 @@
 	}
 
 	function handleKeyDown(event: KeyboardEvent, row: number, col: number) {
-		event.preventDefault();
 		const key = event.key;
 		if (key === 'Backspace' || key === 'Delete') {
 			puzzleState[row][col] = ' ';
@@ -165,27 +164,28 @@
 						/>
 					{/each}
 				</svg>
-				{#each [0, 1, 2, 3] as i (i)}
-					{#each [0, 1, 2, 3] as j (j)}
-						{@const highlightIndex = getHighlightIndex(i, j)}
-						{@const accentIndex =
-							highlightIndex >= 0 ? Math.min(highlightIndex, maxAccentIndex) : 0}
-						<input
-							bind:this={inputRefs[i * 4 + j]}
-							type="text"
-							maxlength="1"
-							class="tile-input relative z-10 m-[0.2rem] h-16 w-16 border border-gray-300 text-center text-2xl"
-							class:highlighted={isInHighlightedPath(i, j)}
-							style={highlightIndex >= 0
-								? `--accent-color: var(--accent-color-${accentIndex})`
-								: ''}
-							id="tile-{i}-{j}"
-							value={puzzleState[i][j] || ''}
-							onkeydown={(e) => handleKeyDown(e, i, j)}
-						/>
+				<div class="grid-container">
+					{#each [0, 1, 2, 3] as i (i)}
+						{#each [0, 1, 2, 3] as j (j)}
+							{@const highlightIndex = getHighlightIndex(i, j)}
+							{@const accentIndex =
+								highlightIndex >= 0 ? Math.min(highlightIndex, maxAccentIndex) : 0}
+							<input
+								bind:this={inputRefs[i * 4 + j]}
+								type="text"
+								maxlength="1"
+								class="tile-input relative z-10 m-[0.2rem] h-16 w-16 border border-gray-300 text-center text-2xl"
+								class:highlighted={isInHighlightedPath(i, j)}
+								style={highlightIndex >= 0
+									? `--accent-color: var(--accent-color-${accentIndex})`
+									: ''}
+								id="tile-{i}-{j}"
+								value={puzzleState[i][j] || ''}
+								onkeydown={(e) => handleKeyDown(e, i, j)}
+							/>
+						{/each}
 					{/each}
-					<br />
-				{/each}
+				</div>
 			</div>
 			<div class="flex">
 				{#if navigating.to}
@@ -249,6 +249,12 @@
 		--accent-color-10: #4000fe;
 		--accent-color-11: #6a00fe;
 		--accent-color-12: #9400fe;
+
+		.grid-container {
+			display: grid;
+			grid-template-columns: repeat(4, auto);
+			width: fit-content;
+		}
 	}
 
 	.tile-input {
